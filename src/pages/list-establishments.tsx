@@ -2,18 +2,21 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import { Establishment } from "../types";
+import Link from 'next/link';
 import styles from '../styles/ListEstablishments.module.css';
+import { useRouter } from 'next/router';
 
 const ListEstablishments: React.FC = () => {
   const [establishments, setEstablishments] = useState<Establishment[]>([]);
+  const [selectedEstablishmentId, setSelectedEstablishmentId] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchEstablishments = async () => {
       try {
         const response = await fetch('/api/getAllEstablishments');
         if (!response.ok) {
-          console.error('Failed to fetch establishments:', await response.text());
-          return;
+          throw new Error('Failed to fetch establishments');
         }
         const data = await response.json() as Establishment[];
         setEstablishments(data);
@@ -24,23 +27,39 @@ const ListEstablishments: React.FC = () => {
     fetchEstablishments();
   }, []);
 
+  const handleSelectEstablishment = (id: string) => {
+    setSelectedEstablishmentId(id);  // Store the selected ID or do something with it
+    router.push(`/submit-review?establishmentId=${id}`); // Redirect to the submit review page
+  };
+
   return (
     <>
       <Head>
         <title>List Establishments</title>
         <meta name="description" content="View all establishments" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main className={styles.container}>
-        <h1 className={styles.header}>List of Establishments</h1>
-        <div className={styles.establishmentList}>
+        <h1>List of Establishments</h1>
+        <div className={styles.cardContainer}>
           {establishments.map(establishment => (
-            <div key={establishment.id} className={styles.card}>
+            <div 
+              key={establishment.id} 
+              className={styles.card} 
+              onClick={() => handleSelectEstablishment(establishment.id)}
+            >
               <h2>{establishment.name}</h2>
               <p>ID: {establishment.id}</p>
             </div>
           ))}
         </div>
+        {selectedEstablishmentId && (
+          <div className={styles.selectedEstablishment}>
+            <p>Selected Establishment ID: {selectedEstablishmentId}</p>
+            <Link href={`/submit-review?establishmentId=${selectedEstablishmentId}`} className={styles.link}>
+              Submit a Review for this Establishment
+            </Link>
+          </div>
+        )}
       </main>
     </>
   );

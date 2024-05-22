@@ -1,5 +1,6 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import Head from "next/head";
+import { useRouter } from 'next/router';
 import styles from "../styles/CreateEstablishment.module.css";
 
 // Define the structure for the establishment details
@@ -24,6 +25,8 @@ interface EstablishmentDetails {
 }
 
 export default function CreateEstablishment() {
+  const router = useRouter();
+
   // Initial values set for the form fields
   const [establishmentDetails, setEstablishmentDetails] = useState<EstablishmentDetails>({
     type: "hotel",
@@ -46,6 +49,7 @@ export default function CreateEstablishment() {
   });
 
   const [establishmentId, setEstablishmentId] = useState<string>("");
+  const [response, setResponse] = useState<string>("");
 
   // Function to handle changes in the form inputs
   const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void => {
@@ -76,8 +80,10 @@ export default function CreateEstablishment() {
 
       const data = await response.json();
       setEstablishmentId(data.id);  // Save the establishment ID for future operations
+      router.push(`/submit-review?establishmentId=${data.id}`); // Redirect to the submit-review page
     } catch (error) {
       console.error("Error creating establishment:", error);
+      setResponse("Failed to create establishment.");
     }
   };
 
@@ -91,7 +97,7 @@ export default function CreateEstablishment() {
       </Head>
       <main className={styles.main}>
         <h1 className={styles.heading}>Create Establishment</h1>
-        <form className={styles.form}>
+        <form className={styles.form} onSubmit={(e: FormEvent) => { e.preventDefault(); createEstablishment(); }}>
           {/* Render inputs for all establishment details */}
           {Object.entries(establishmentDetails).map(([key, value]) => {
             if (key === "active") {
@@ -123,8 +129,9 @@ export default function CreateEstablishment() {
               </div>
             );
           })}
-          <button type="button" onClick={createEstablishment} className={styles.button}>Create Establishment</button>
+          <button type="submit" className={styles.button}>Create Establishment</button>
         </form>
+        {response && <p className={styles.response}>{response}</p>}
       </main>
     </>
   );

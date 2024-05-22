@@ -4,14 +4,14 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://external-api.com/:path*',
+        destination: `${process.env.NEXT_PUBLIC_BASE_URL}/:path*`, 
       },
     ];
   },
   env: {
     CLIENT_ID: process.env.CLIENT_ID,
     CLIENT_SECRET: process.env.CLIENT_SECRET,
-    BASE_URL: process.env.BASE_URL,
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL, 
   },
   images: {
     domains: ['example.com'],
@@ -30,6 +30,14 @@ const nextConfig = {
       },
     ];
   },
+  webpack(config) {
+    // Logging for debugging
+    console.log('CLIENT_ID:', process.env.CLIENT_ID);
+    console.log('CLIENT_SECRET:', process.env.CLIENT_SECRET);
+    console.log('NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL);
+
+    return config;
+  }
 };
 
 export default nextConfig;
