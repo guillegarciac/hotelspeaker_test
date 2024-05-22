@@ -1,0 +1,683 @@
+openapi: 3.0.2
+info:
+  version: '2.0'
+  title: XSpeaker Data Exchange Format
+#  termsOfService: 'https://example.com/terms/'
+  contact:
+    email: admin@idixit.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  x-logo:
+    url: 'IDIXIT.png'
+  description: >
+    ### Base endpoint: https://api.idixit.com/v2/
+tags:
+  - name: Getting Started
+    description: |
+      Welcome to the API documentation for our review submission system! Our API allows users to submit reviews to our server asynchronously, enabling efficient handling of large volumes of feedback while ensuring timely responses.
+
+      With our API, clients can seamlessly send their reviews to our servers, freeing them from the constraints of synchronous interactions.
+
+      This documentation covers how to integrate our API into your applications, enabling your users to submit reviews effortlessly. Additionally, you'll discover how to handle responses from our server, providing your users with timely feedback on their submissions.
+
+      Whether you're developing a website, mobile application, or any other software solution, our asynchronous review submission API offers flexibility, scalability, and reliability to meet your needs. Let's dive in and explore how you can leverage our API to streamline the review process for your users.
+  - name: Security Scheme
+    description: |
+      Our system employs HTTP Basic Authentication over HTTPS to ensure secure access to the API endpoints. When you register with our service, you will be provided with a set of credentials consisting of a username and password. These credentials serve as your authentication mechanism for accessing our API.
+  - name: Obtaining Credentials
+    description: |
+      Upon registration, you will receive your unique set of credentials. These credentials are essential for authenticating your requests to our API endpoints. Keep these credentials secure and do not share them with unauthorized parties.
+  - name: Authenticating Requests
+    description: |
+      To authenticate your requests to our API, you need to include your credentials in the HTTP headers using the Basic Authentication scheme. The username and password are combined with a colon (':') and encoded using Base64. The resulting string is included in the Authorization header of your HTTP request.
+  - name: Core Concepts
+    description: |
+      Our API revolves around two core entities. Establishments and Reviews. Understanding these concepts is essential for effectively utilizing our API.
+
+      <h2>Establishments</h2>
+
+      An Establishment represents a business, organization, or any entity that can receive reviews. Before submitting reviews, users must create Establishment objects within our system. Each Establishment is uniquely identified and serves as a target for associated reviews.
+
+      <h2>Creating Establishments</h2>
+
+      To create an Establishment, users must make a POST request to the /establishments endpoint, providing necessary details such as the name, address, category, and any other relevant information. Upon successful creation, the system generates a unique identifier (ID) for the Establishment, which is essential for associating reviews.
+
+      <h2>Reviews</h2>
+
+      A Review represents feedback or evaluation submitted by users for a specific Establishment. Users can submit reviews linked to existing Establishments.
+
+      <h2>Submitting Reviews</h2>
+
+      To submit a Review, users make a POST request to the /reviews endpoint, providing details such as the Establishment ID, review text, rating, and any additional metadata. The system associates the Review with the specified Establishment and processes it accordingly.
+
+      <h2>Callbacks</h2>
+
+      Our API offers a system of callbacks to notify users when a response is received for their submitted reviews. Callbacks allow users to receive real-time updates on the status of their reviews, enabling timely actions or notifications within their applications.
+
+      <h2>Review Response Callbacks</h2>
+
+      Users must specify a callback URL to receive notifications regarding the review's status. The system sends a POST request to the provided callback URL when a response is available for the submitted review. Users can then handle these callbacks to update their application's interface, trigger notifications, or perform any other necessary actions based on the review response.
+
+      <h2>Example Workflow</h2>
+
+      1. Create Establishment: Users create an Establishment object using the /establishments endpoint, providing details such as name, address, and category.
+
+      2. Submit Review: Users submit reviews linked to existing Establishments using the /reviews endpoint, specifying the Establishment ID, review text, rating, etc.
+
+      3. Receive Review Response: Users can provide a callback URL to receive notifications when a response is available for their submitted reviews. The system sends POST requests to these callback URLs, allowing users to handle review responses in real-time.
+
+      By adhering to these core concepts and leveraging the provided endpoints and callbacks, users can seamlessly manage Establishments, submit Reviews, and receive timely notifications within their applications.
+  - name: Establishments
+    description: Operations about Establishments
+  - name: Reviews
+    description: Operations about Reviews
+  - name: Responses
+    description: Operations about reviews Reponses
+  - name: Messages
+    description: The messaging system may be initiated by both parties. Messages can be related to specific reviews, or general. If additional information is requested, the client would have to send an answer using the following method.
+  - name: Callbacks
+    description: Callbacks allow our server to asynchronously notify clients' servers about events such as the availabilty of a response, or any other relevant information. By setting up a callback URL beforehand, clients enable our server to reach out to their servers with pertinent details.
+servers:
+  - url: 'https://api.idixit.com/v2'
+security:
+- Security: []
+paths:
+  /establishments:
+    post:
+      summary: Create Establishment
+      tags:
+        - Establishments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/EstablishmentObject'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The unique identifier for this establishment created
+                  custom_id:
+                    type: string
+                    description: Your reference ID
+    get:
+      summary: List all Establishments
+      tags:
+        - Establishments
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type:	object	
+                  properties:		
+                    id:
+                      type: string
+                      description: The unique identifier for this establishment
+                    name:
+                      type: string
+                      description: Establishment name
+  /establishments/{id}:
+    get:
+      summary: Get Establishment details
+      tags:
+        - Establishments
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/EstablishmentObject'
+    put:
+      summary: Update Establishment
+      description: Same fields as in Create Establishment. Only fields which are mentioned in the request will be updated.
+      tags:
+        - Establishments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/EstablishmentObject'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+  /reviews:
+    post:
+      summary: Submit a review
+      tags:
+        - Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/ReviewObject'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The unique identifier for this review created		    
+  /reviews/{id}:
+    get:
+      summary: Check review status
+      tags:
+        - Reviews
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ReviewStatusObject'
+        '404':
+          description: Not Found
+    delete:
+      summary: Delete a review
+      description: |
+        If a review has the status CREATED (prior to any processing), it can be discarded.
+
+        If a review is to be updated, it should be deleted first and then created as a new review.
+      tags:
+        - Reviews
+      responses:
+        '200':
+          description: OK
+        '304':
+          description: Not Modified
+        '404':
+          description: Not Found
+    put:
+      summary: Update a review
+      description: If the review is being processed on our side, this will have no effect (HTTP code 304 Not Modified will be returned). Otherwise the current review will be deleted and a new review will be created and the new review identifier will be sent out.
+      tags:
+        - Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/ReviewObject'
+      responses:
+        '200':
+          description: OK
+        '304':
+          description: Not Modified
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+
+  /reviews/{id}/feedback:
+    post:
+      summary: Leaving feedback
+      description: A feedback on the quality of our response. If the response is rejected, another one will be submitted subsequently
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                  status:		
+                    type: string 
+                    enum: [approved, disapproved]
+                  reason:		
+                    type: string 
+                    description: (Optional) In case of disapproval, a detailed explanation of the reasons
+      responses:
+        '200':
+          description: OK
+        '304':
+          description: Not Modified
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /reviews/{id}/publication:
+    put:
+      summary: Set response publication status
+      description: An update on the fact that the response is actually visible or not at its final destination (i.e. if it was technically possible to post the response)
+      tags:
+        - Responses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                  status:		
+                    type: string 
+                    enum: [VERIFIED, REJECTED, AWAITING APPROVAL, FAILED, PUBLISHED]
+                  reason:		
+                    type: string 
+                    description: (Optional) An explicit error reason in case of rejection
+      responses:
+        '200':
+          description: OK
+        '304':
+          description: Not Modified
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /messages:
+    post:
+      summary: Sending us a message
+      tags:
+        - Messages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                  contents:		
+                    type: string 
+                    description: The client's message
+                  establishment_id:		
+                    type: string 
+                    required: false 
+                    description: (optional) The establishment the message is related to, if the message doesn't concern a specific review
+                  review_id:		
+                    type: string 
+                    required: false 
+                    description: (optional) The review the message is related to
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message_id:
+                    type: string
+                    description: The unique identifier for this message. Will be referenced by our answer   
+  /messages/{id}:
+    post:
+      summary: Responding to a message
+      tags:
+        - Messages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                  message_id:		
+                    type: string 
+                    description: The message identifier	   
+                  contents:		
+                    type: string 
+                    description: The client's answer to the message
+  /callback:
+    post:
+      summary: Setting up a callback
+      description: |
+        You may setup a callback address for certain types of events. This callback will be reached via POST request with the following syntax:
+
+        `https://my.callback?event={event}&sig={signature}`
+
+        The signature value will be the SHA256 signature of the contents using the client's secret. 
+
+        Example (PHP):
+        ```php
+        $secret = "rQ4tY4pW8jK1bG7iH7qJ9rF8iA9uV6eB";
+        $json_data = file_get_contents('php://input');
+        $sig = hash_hmac('sha256', $json_data, $secret);
+        if ($_REQUEST['sig'] != $sig) {
+            header("HTTP/1.1 403 Forbidden");
+            die("Signature mismatch\n");
+        }
+        ```
+        The callback is expected to return a HTTP code 200 OK in case of success. Retries will occur later in case of failure.
+      tags:
+        - Callbacks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                  url:		
+                    type: string 
+                    description: The callback URL on your server
+      responses:
+        '200':
+          description: OK
+  /callback/{event}:
+    get:
+      summary: Triggering a callback
+      description: This is for testing purposes only. This can be used to send sample data to your callback endpoint to make sure it is actually reachable from our servers, and that data structure and signature are processed correctly.
+      tags:
+        - Callbacks
+      parameters:
+        - in: path
+          name: event
+          required: true
+          schema:
+            type: string
+            enum: [responses_available, information_requested]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  http_code:		
+                    type: string 
+                    description: The HTTP code returned by your callback
+                  contents:		
+                    type: string 
+                    description: The first 1024 characters returned by your callback
+        '400':
+          description: Callback not set
+        '404':
+          description: Event not found
+x-webhooks:
+  responses_available:
+    post:
+      summary: responses_available
+      description: Triggered whenever one or more responses are available for a particular review.	
+      tags:
+        - Callbacks
+      requestBody:
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                  review_id:		
+                    type: string 
+                    description: The identifier of the review in Idixit database
+                  responses:	
+                    description: An array of responses broken down in three parts (opening, body, closing)
+                    type: array 
+                    items:
+                      type: object		    
+                      properties:		      
+                        opening:
+                          type: string
+                          description: Response opening line
+                        body:
+                          type: string			
+                          description: Response main body
+                        closing:
+                          type: string			
+                          description: Response closing line
+  information_requested:
+    post:
+      summary: information_requested    
+      description: Triggered whenever additional information is needed about a particular review in order to create a more specific response. 
+      tags:
+        - Callbacks
+      requestBody:
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                  message_id:		
+                    type: string 
+                    description: Question identifier to be reused when an answer is submitted
+                  review_id:		
+                    type: string 
+                    description: The identifier of the review in Idixit database
+                  contents:		
+                    type: string 
+                    description: The content of the message
+              
+components:
+  schemas:
+    EstablishmentObject:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [hotel, apartment, restaurant, holiday_village, camping, grocery, association, car_dealer, construction, repair, retailer, manufacturer_distributor, education_training, distribution, rental, medical_paramedical, public, car_services, services, transport_and_courrier, b2b, b2c, wellness, water_transportation]
+          description: Establishment type		  
+        custom_id:
+          type: string		
+          description: Your own unique reference ID for this establishment
+        name:
+          type: string	
+          description: Establishment name	
+        address:
+          type: string
+          description: Establishment address	
+        zipcode:
+          type: string
+          description: Establishment zip code	
+        city:
+          type: string
+          description: Establishment city name
+        state_or_region:
+          type: string
+          description: Establishment state (if U.S.) or region
+        country:
+          type: string
+          description: Establishment country name (full)
+        phone:
+          type: string
+          description: Establishment phone number
+        email:
+          type: string
+          description: Establishment email address
+        website:
+          type: string
+          description: Establishment website
+        response_tone:
+          type: string
+          enum: [informal, formal, very_formal]
+          default: formal
+        preferred_language:
+          type: string
+          description: For communication with the establishment owner (ISO-639-1)
+        active:
+          type: boolean
+          default: true
+        signature_name:
+          type: string
+          description: The default signature name. Can be overriden at the Review level.
+        signature_title:
+          type: string
+          description: The default signature title. Can be overriden at the Review level.
+        custom_tags:
+          type: array
+          description: An array of key/value pairs which describes specific characteristics of the establishment. Custom Tags let you inject precise, personal details into responses with ease. Perfect for highlighting services or addressing concerns, they ensure every reply is relevant and personalized, enhancing customer engagement.
+        brand_guidelines:
+          type: string
+          description: (Premium only) Text document which includes extra specific directions that we will digest to elaborate even more specific responses.
+        marketing_messages:
+          type: array
+          items:
+            type: object
+            properties:
+              text:
+                type: string		
+              start_date:
+                type: integer
+                description: Start date as UNIX timestamp
+              stop_date:
+                type: integer
+                description: Stop date as UNIX timestamp
+          description: (Premium only) A collection of seasonal text elements to be integrated into the responses, that apply between two dates (UNIX timestamps)
+        created:
+          type: integer
+          description: Creation time as UNIX timestamp (GET /establishments/{id} only)
+        updated:
+          type: integer
+          description: Creation time as UNIX timestamp (GET /establishments/{id} only)
+    ReviewObject:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [premium, basic, auto]
+          description: Review type, may be set by client settings by default
+          default: premium
+        establishment_id:
+          type: string		
+          description: (required) Establishment's identifier (Idixit's reference) to which the review belogs  
+        origin: 	  
+          type: string		
+          description: Origin of the review (Google, TripAdvisor etc.)
+        username:
+          type: string		
+          description: Author's name
+        user_location:
+          type: string		
+          description: Geographic origin of author
+        language:
+          type: string
+          description: (required) ISO-639-1 language code of the review
+        global_rating:
+          type: float		
+          description: Numeric rating in originating rating system
+        normalized_rating:
+          type: integer		
+          description: The rating on an integer range from 0 to 100
+          minimum: 0
+          maximum: 100
+        detailed_ratings:
+          type: array
+          description: An array of rating details with or without text comments
+          items:
+            type: object	
+            properties:		
+              name:
+                type: string
+                description: Eg. "Service", "Cleanliness", "Price"
+              rating:
+                type: float
+                description: The rating in the originating rating system (optional)
+              text:
+                type: string
+                description: Open comments associated with the rating
+        link:
+          type: string		
+          description: A permalink to the public review
+        date:
+          type: integer|string
+          description: (required) Date of publication (UNIX timestamp or string literal in YYYY-MM-DD hh:mm:ss format)
+        title:
+          type: string		
+          description: Heading of the review (may be empty)
+        text:
+          type: string		
+          description: Content of the review (may be empty)
+        positive_text:
+          type: string		
+          description: Content of the review in a positive context
+        negative_text:
+          type: string		
+          description: Content of the review in a negative context
+        questions_and_answers:
+          type: array
+          description: An array of Q/A elements if the review is in the form of a survey
+          items:
+            type: object	
+            properties:		
+              q:
+                type: string
+                description: The question
+              a:
+                type: string
+                description: The answer
+        context:
+          type: string		
+          description: Any complementary information that could refine the response (if `type=premium`)
+        public_context:
+          type: string		
+          description: Any complementary information useful for the property owner
+        synchronous:
+          type: boolean		
+          default: false
+          description: If the answer production bypasses the callback mechanism. May take a significant amount of time. It is not recommended to change this attribute unless invited to (if `type=auto`).
+        response_tone:
+          type: string
+          enum: [informal, formal, very_formal]
+          description: If present, overrides establishment's default response tone
+        response_length:
+          type: string
+          enum: [brief, extended]
+          default: extended
+          description: |
+            The approximative length of the response.
+            - `brief`: the response's length will be typically below 200 characters	    
+            - `extended`: the response's length will be above 200 characters
+        response_can_use_humour:
+          type: boolean
+          default: false
+          description: Allow the response to contain humorous elements
+        response_can_use_emoticons:
+          type: boolean		
+          default: false
+          description: Allow the response to contain emoticons
+        custom_signature_title:
+          type: string
+        custom_signature_name:
+          type: string
+    ReviewStatusObject:	    
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [CREATED, PROCESSING, INFO_REQUESTED, RESPONDED]
+          description: |
+            - CREATED: the review has been created (not processed yet)	    
+            - PROCESSING: the review is being processed
+            - INFO_REQUEST: the processing is paused pending further information to be given
+            - RESPONDED: one or more responses are available
+        responses:
+          type: array
+          description: (If `status=RESPONDED`) An array of possible responses (exactly one if `type=premium`)
+          items: 	 
+            type: object
+            properties:
+              opening_line:
+                type: string
+                description: Header of the response	     
+              text:
+                type: string
+                description: Main content of the response
+              closing_line:
+                type: string
+                description: Last part of the response	     
+              language:
+                type: string
+                description: If different from the review language
+  securitySchemes:
+    Security:
+      type: http
+      scheme: basic
+      description: Credentials are provided by Idixit. Use HTTP Authentication with `api_client_id` as login and `api_client_secret` as password.
