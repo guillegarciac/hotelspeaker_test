@@ -1,3 +1,4 @@
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   async rewrites() {
     return [
@@ -29,6 +30,10 @@ const nextConfig = {
       },
     ];
   },
+  output: 'export',
+  trailingSlash: true,
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/hotelspeaker_test/' : '',
+  basePath: process.env.NODE_ENV === 'production' ? '/hotelspeaker_test' : '',
 };
 
 export default nextConfig;
