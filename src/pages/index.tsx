@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Head from 'next/head';
+import styles from '../styles/HomePage.module.css';
 
 const HomePage: React.FC = () => {
   return (
@@ -10,14 +11,15 @@ const HomePage: React.FC = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main style={{ padding: "2rem", fontFamily: "Arial, sans-serif", textAlign: "center" }}>
-        <h1>Establishment Management</h1>
-        <p>Select an action:</p>
-        <div style={{ margin: "20px" }}>
-          <Link href="/create-establishment"
-            style={{ marginRight: "20px", padding: "10px 20px", background: "blue", color: "white", textDecoration: "none" }}>Create Establishment
+      <main className={styles.main}>
+        <h1 className={styles.heading}>Establishment Management</h1>
+        <p className={styles.description}>Select an action:</p>
+        <div className={styles.linkContainer}>
+          <Link href="/create-establishment" className={`${styles.link} ${styles.createLink}`}>
+            Create Establishment
           </Link>
-          <Link href="/list-establishments" style={{ padding: "10px 20px", background: "green", color: "white", textDecoration: "none" }}> Establishments List
+          <Link href="/list-establishments" className={`${styles.link} ${styles.listLink}`}>
+            Establishments List
           </Link>
         </div>
       </main>

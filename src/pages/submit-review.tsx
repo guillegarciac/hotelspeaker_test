@@ -1,12 +1,13 @@
 import { useRouter } from 'next/router';
 import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
+import Head from 'next/head';
+import styles from '../styles/SubmitReview.module.css';
 
 const SubmitReview: React.FC = () => {
   const router = useRouter();
   const { establishmentId } = router.query;
   const defaultReview = "Both the facilities and the staff were far above our expectations. The location of this hotel is strategic, in the center of the places you can visit... and if not, transportation was just a few steps away. The only downside was that a vegan breakfast was missing.";
 
-  // State for the review, language, and response
   const [review, setReview] = useState<string>(defaultReview);
   const [language, setLanguage] = useState<string>('en');
   const [response, setResponse] = useState<string>('');
@@ -14,16 +15,16 @@ const SubmitReview: React.FC = () => {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    const timestamp = new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().split(' ')[0]; // Current time in "YYYY-MM-DD hh:mm:ss" format
-    const callbackUrl = `${window.location.origin}/api/reviewCallback`; // URL of the callback endpoint
+    const timestamp = new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().split(' ')[0];
+    const callbackUrl = `${window.location.origin}/api/reviewCallback`;
 
     const reviewData = {
       establishment_id: establishmentId,
       language: language,
-      date: timestamp, // ISO format for the date
-      type: 'premium', // Assuming default type
-      text: review, // Assuming 'text' is the correct field for review content
-      callback_url: callbackUrl // Include the callback URL
+      date: timestamp,
+      type: 'premium',
+      text: review,
+      callback_url: callbackUrl
     };
 
     try {
@@ -34,7 +35,7 @@ const SubmitReview: React.FC = () => {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to submit review');
-      setReviewId(data.id); // Save the review ID to fetch the response
+      setReviewId(data.id);
     } catch (error) {
       console.error("Error submitting review:", error);
       setResponse("Failed to submit review.");
@@ -49,9 +50,9 @@ const SubmitReview: React.FC = () => {
       });
       const data = await res.json();
       if (res.ok && data.responses.length > 0) {
-        setResponse(data.responses[0]?.text || 'No response available'); // Assuming responses is an array
+        setResponse(data.responses[0]?.text || 'No response available');
       } else {
-        setTimeout(() => fetchReviewResponse(reviewId), 5000); // Retry after 5 seconds if not responded yet
+        setTimeout(() => fetchReviewResponse(reviewId), 5000);
       }
     } catch (error) {
       console.error("Error fetching review response:", error);
@@ -70,31 +71,34 @@ const SubmitReview: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '10px' }}>
-      <h1>Submit a Review for Establishment ID: {establishmentId}</h1>
-      <form onSubmit={handleSubmit}>
+    <div className={styles.container}>
+      <Head>
+        <title>Submit Review</title>
+        <meta name="description" content="Submit a review for an establishment" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <h1 className={styles.heading}>Submit a Review for Establishment ID: {establishmentId}</h1>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <textarea
           value={review}
           onChange={e => setReview(e.target.value)}
-          style={{ width: '100%', height: '200px', marginBottom: '10px' }}
+          className={styles.textarea}
         />
         <div>
-          <label htmlFor="language-select">Language:</label>
+          <label htmlFor="language-select" className={styles.label}>Language:</label>
           <select
             id="language-select"
             value={language}
             onChange={handleLanguageChange}
-            style={{ marginLeft: '10px' }}
+            className={styles.select}
           >
             <option value="en">English</option>
             <option value="es">Español</option>
           </select>
         </div>
-        <button type="submit" style={{ width: '100%', padding: '10px 0', backgroundColor: 'blue', color: 'white', border: 'none', borderRadius: '5px', marginTop: '10px' }}>
-          Submit Review
-        </button>
+        <button type="submit" className={styles.button}>Submit Review</button>
       </form>
-      {response && <p>{response}</p>}
+      {response && <p className={styles.response}>{response}</p>}
     </div>
   );
 };

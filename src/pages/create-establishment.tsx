@@ -1,5 +1,6 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import Head from "next/head";
+import styles from "../styles/CreateEstablishment.module.css";
 
 // Define the structure for the establishment details
 interface EstablishmentDetails {
@@ -45,8 +46,6 @@ export default function CreateEstablishment() {
   });
 
   const [establishmentId, setEstablishmentId] = useState<string>("");
-  const [review, setReview] = useState<string>("");
-  const [response, setResponse] = useState<string>("");
 
   // Function to handle changes in the form inputs
   const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void => {
@@ -82,32 +81,6 @@ export default function CreateEstablishment() {
     }
   };
 
-  // Function to handle form submission for reviews
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-    try {
-      const response = await fetch('/api/submitReview', {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          establishmentId,  // Include the establishment ID when submitting the review
-          review
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to submit review: ${await response.text()}`);
-      }
-
-      const data = await response.json();
-      setResponse(data.response);  // Display the response from the API
-    } catch (error) {
-      console.error("Error submitting review:", error);
-    }
-  };
-
   return (
     <>
       <Head>
@@ -116,36 +89,41 @@ export default function CreateEstablishment() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main style={{ padding: "2rem", fontFamily: "Arial, sans-serif" }}>
-        <h1>Create Establishment</h1>
-        <form>
+      <main className={styles.main}>
+        <h1 className={styles.heading}>Create Establishment</h1>
+        <form className={styles.form}>
           {/* Render inputs for all establishment details */}
           {Object.entries(establishmentDetails).map(([key, value]) => {
             if (key === "active") {
               return (
-                <label key={key}>
+                <label key={key} className={styles.label}>
                   {key.charAt(0).toUpperCase() + key.slice(1)}:
                   <input
                     type="checkbox"
                     name={key}
                     checked={value as unknown as boolean}
                     onChange={handleInputChange}
+                    className={styles.input}
                   />
                 </label>
               );
             }
             return (
-              <input
-                key={key}
-                type={key === "email" ? "email" : key === "website" ? "url" : "text"}
-                name={key}
-                placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-                value={value as string}
-                onChange={handleInputChange}
-              />
+              <div key={key} className={styles.inputContainer}>
+                <label htmlFor={key} className={styles.label}>{key.charAt(0).toUpperCase() + key.slice(1)}:</label>
+                <input
+                  id={key}
+                  type={key === "email" ? "email" : key === "website" ? "url" : "text"}
+                  name={key}
+                  placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+                  value={value as string}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                />
+              </div>
             );
           })}
-          <button type="button" onClick={createEstablishment}>Create Establishment</button>
+          <button type="button" onClick={createEstablishment} className={styles.button}>Create Establishment</button>
         </form>
       </main>
     </>
