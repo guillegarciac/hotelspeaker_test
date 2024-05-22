@@ -1,3 +1,4 @@
+// next.config.js
 const nextConfig = {
   async rewrites() {
     return [
