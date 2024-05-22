@@ -1,55 +1,49 @@
-/* src/styles/ListEstablishments.module.css */
+/* styles/ListEstablishments.module.css */
 .container {
   padding: 1rem;
   font-family: Arial, sans-serif;
 }
 
-.heading {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
+.header {
   text-align: center;
+  margin-bottom: 1rem;
 }
 
-.cards {
+.establishmentList {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 1rem;
-  justify-content: center;
 }
 
 .card {
-  background: #fff;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 1rem;
-  width: 100%;
-  max-width: 300px;
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.selected {
-  border: 2px solid #0070f3;
+.card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
 }
 
-.link {
-  display: block;
-  margin-top: 1rem;
-  color: #0070f3;
-  text-decoration: none;
+.card p {
+  margin: 0;
+  color: #555;
 }
 
-.link:hover {
-  text-decoration: underline;
-}
-
-.selectedInfo {
-  text-align: center;
-  margin-top: 1rem;
+@media (min-width: 600px) {
+  .establishmentList {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .card {
+    flex: 1 1 calc(33.333% - 1rem);
+    margin: 0.5rem;
+  }
 }
