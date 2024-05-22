@@ -147,27 +147,6 @@ export default function CreateEstablishment() {
           })}
           <button type="button" onClick={createEstablishment}>Create Establishment</button>
         </form>
-        {establishmentId && <>
-          <h1>Submit a Review</h1>
-          <form onSubmit={handleSubmit}>
-            <textarea
-              value={review}
-              onChange={e => setReview(e.target.value)}
-              rows={10}
-              cols={50}
-              placeholder="Paste your review here"
-              required
-              style={{ width: "100%", padding: "1rem", fontSize: "1rem" }}
-            ></textarea>
-            <button type="submit" style={{ padding: "0.5rem 1rem", fontSize: "1rem" }}>Submit Review</button>
-          </form>
-        </>}
-        {response && (
-          <div style={{ marginTop: "2rem" }}>
-            <h2>Response</h2>
-            <p>{response}</p>
-          </div>
-        )}
       </main>
     </>
   );
