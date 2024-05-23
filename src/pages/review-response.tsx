@@ -1,4 +1,3 @@
-// ReviewResponse.tsx
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
@@ -14,10 +13,15 @@ const ReviewResponse: React.FC = () => {
       try {
         const res = await fetch(`/api/getReviewResponse?reviewId=${reviewId}`);
         const data = await res.json();
-        if (res.ok && data.data.responses && data.data.responses.length > 0) {
-          setResponse(data.data.responses[0]?.text || 'No response available');
+        if (res.ok) {
+          // Ensure that the data structure is correct and data exists
+          if (data.responses && data.responses.length > 0) {
+            setResponse(data.responses[0].text);
+          } else {
+            setResponse('No response available.');
+          }
         } else {
-          setResponse('No updates available yet.');
+          throw new Error('Network response was not ok.');
         }
       } catch (error) {
         console.error("Error fetching review response:", error);
@@ -25,8 +29,10 @@ const ReviewResponse: React.FC = () => {
       }
     };
 
-    fetchData();
-  }, [reviewId]);
+    if (reviewId) {
+      fetchData();
+    }
+  }, [reviewId]);  // Dependency array ensures useEffect is called when reviewId changes
 
   return (
     <div className={styles.container}>
