@@ -3,44 +3,35 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import styles from '../styles/ReviewResponse.module.css';
 
-const ReviewResponse: React.FC = () => {
+const ReviewResponse = () => {
   const router = useRouter();
   const { reviewId } = router.query;
-  const [response, setResponse] = useState<string>('Waiting for response...');
+  const [response, setResponse] = useState('Waiting for response...');
 
   useEffect(() => {
-    const fetchData = async () => {
+    const intervalId = setInterval(async () => {
+      if (!reviewId) return;
+
       try {
-        const res = await fetch(`/api/getReviewResponse?reviewId=${reviewId}`);
+        const res = await fetch(`/api/checkCallback?reviewId=${reviewId}`);
         const data = await res.json();
-        if (res.ok) {
-          // Ensure that the data structure is correct and data exists
-          if (data.responses && data.responses.length > 0) {
-            setResponse(data.responses[0].text);
-          } else {
-            setResponse('No response available.');
-          }
-        } else {
-          throw new Error('Network response was not ok.');
+        if (data.found) {
+          setResponse(data.data.text);  // Adjust according to actual data structure
+          clearInterval(intervalId);
         }
       } catch (error) {
-        console.error("Error fetching review response:", error);
+        console.error("Error fetching callback data:", error);
         setResponse("Failed to connect for updates.");
+        clearInterval(intervalId);
       }
-    };
+    }, 2000); // Poll every 2 seconds
 
-    if (reviewId) {
-      fetchData();
-    }
-  }, [reviewId]);  // Dependency array ensures useEffect is called when reviewId changes
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, [reviewId]);
 
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Review Response</title>
-        <meta name="description" content="View the response for your submitted review" />
-      </Head>
-      <h1 className={styles.heading}>Review Response</h1>
+    <div>
+      <h1>Review Response</h1>
       <p>{response}</p>
     </div>
   );

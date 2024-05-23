@@ -2,6 +2,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import crypto from 'crypto';
 
+// Temporary in-memory store
+const callbackStore: Record<string, any> = {};
+
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
         res.setHeader('Allow', ['POST']);
@@ -27,12 +30,16 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     const sig = crypto.createHmac('sha256', secret).update(json_data).digest('hex');
 
     if (providedSig !== sig) {
-        res.status(403).send("Signature mismatch");
-        return;
+      res.status(403).send("Signature mismatch");
+      return;
     }
+
+    // Assuming that the reviewId is sent as part of the body
+    const { reviewId } = req.body;
+    const callbackStore: { [key: string]: any } = {}; // Provide a type for the callbackStore object
+    callbackStore[reviewId] = req.body;
 
     console.log("Verified POST data:", req.body);
 
-    // Pass data directly back to the client
-    res.status(200).json({ success: true, data: req.body });
+    res.status(200).json({ success: true });
 }
