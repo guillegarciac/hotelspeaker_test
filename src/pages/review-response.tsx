@@ -9,28 +9,29 @@ const ReviewResponse: React.FC = () => {
   const [response, setResponse] = useState<string>('Waiting for response...');
 
   useEffect(() => {
-    const eventSourceUrl = `${process.env.NEXT_PUBLIC_DOMAIN_URL}/api/reviewResponseStream`;
+    const eventSourceUrl = `${process.env.NEXT_PUBLIC_DOMAIN_URL}/api/reviewResponseStream?reviewId=${reviewId}`;
     console.log("EventSource URL:", eventSourceUrl);
     const eventSource = new EventSource(eventSourceUrl);
 
     eventSource.onmessage = function(event) {
-      const data = JSON.parse(event.data);
-      if (data.review_id === reviewId && data.responses.length > 0) {
-        setResponse(data.responses[0]?.text || 'No response available');
-        eventSource.close();
-      }
+        const data = JSON.parse(event.data);
+        if (data.review_id === reviewId && data.responses && data.responses.length > 0) {
+            setResponse(data.responses[0]?.text || 'No response available');
+            eventSource.close();
+        }
     };
 
     eventSource.onerror = function(error) {
-      console.error("EventSource failed:", error);
-      setResponse("Failed to connect for updates.");
-      eventSource.close();
+        console.error("EventSource failed:", error);
+        setResponse("Failed to connect for updates.");
+        eventSource.close();
     };
 
     return () => {
-      eventSource.close();
+        eventSource.close();
     };
-  }, [reviewId]);  // Dependency on reviewId to reinitialize if it changes
+}, [reviewId]);
+
 
   return (
     <div className={styles.container}>

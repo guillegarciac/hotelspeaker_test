@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { Establishment } from '../../types'; // Ensure this is the correct path to your types
+import { Establishment } from '../../types';
 import styles from '../../styles/EstablishmentDetails.module.css';
 
 const EstablishmentDetails: React.FC = () => {
   const router = useRouter();
-  const { id } = router.query; // This gets the ID from the URL
+  const { id } = router.query;
   const [establishment, setEstablishment] = useState<Establishment | null>(null);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const EstablishmentDetails: React.FC = () => {
   }, [id]);
 
   if (!establishment) {
-    return <div className={styles.loading}>Loading...</div>; // Show loading state or any other handling for empty data
+    return <div className={styles.loading}>Loading...</div>; 
   }
 
   return (

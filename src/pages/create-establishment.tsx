@@ -3,7 +3,6 @@ import Head from "next/head";
 import { useRouter } from 'next/router';
 import styles from "../styles/CreateEstablishment.module.css";
 
-// Define the structure for the establishment details
 interface EstablishmentDetails {
   type: string;
   custom_id: string;
@@ -53,7 +52,7 @@ export default function CreateEstablishment() {
 
   // Function to handle changes in the form inputs
   const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void => {
-    const target = event.target as HTMLInputElement; // Type assertion here
+    const target = event.target as HTMLInputElement; 
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
   
@@ -79,8 +78,8 @@ export default function CreateEstablishment() {
       }
 
       const data = await response.json();
-      setEstablishmentId(data.id);  // Save the establishment ID for future operations
-      router.push(`/submit-review?establishmentId=${data.id}`); // Redirect to the submit-review page
+      setEstablishmentId(data.id);  
+      router.push(`/submit-review?establishmentId=${data.id}`); 
     } catch (error) {
       console.error("Error creating establishment:", error);
       setResponse("Failed to create establishment.");
@@ -98,7 +97,6 @@ export default function CreateEstablishment() {
       <main className={styles.main}>
         <h1 className={styles.heading}>Create Establishment</h1>
         <form className={styles.form} onSubmit={(e: FormEvent) => { e.preventDefault(); createEstablishment(); }}>
-          {/* Render inputs for all establishment details */}
           {Object.entries(establishmentDetails).map(([key, value]) => {
             if (key === "active") {
               return (

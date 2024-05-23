@@ -28,8 +28,8 @@ const ListEstablishments: React.FC = () => {
   }, []);
 
   const handleSelectEstablishment = (id: string) => {
-    setSelectedEstablishmentId(id);  // Store the selected ID or do something with it
-    router.push(`/submit-review?establishmentId=${id}`); // Redirect to the submit review page
+    setSelectedEstablishmentId(id);  
+    router.push(`/submit-review?establishmentId=${id}`); 
   };
 
   return (
