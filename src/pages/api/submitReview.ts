@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Include the callback URL dynamically
-    const callbackUrl = `https://hotelspeaker.vercel.app/api/reviewResponse`;
+    const callbackUrl = `${process.env.NEXT_PUBLIC_DOMAIN_URL}/api/reviewResponse`;
 
     const reviewData = {
       establishment_id,

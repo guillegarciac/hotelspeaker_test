@@ -16,7 +16,7 @@ const SubmitReview: React.FC = () => {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const timestamp = new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().split(' ')[0];
-    const callbackUrl = `https://hotelspeaker.vercel.app/api/reviewResponse`;
+    const callbackUrl = `${process.env.NEXT_PUBLIC_DOMAIN_URL}/api/reviewResponse`;
     console.log("Callback URL:", callbackUrl);
 
     const reviewData = {
