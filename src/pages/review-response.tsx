@@ -9,7 +9,7 @@ const ReviewResponse: React.FC = () => {
   const [response, setResponse] = useState<string>('Waiting for response...');
 
   useEffect(() => {
-    const eventSource = new EventSource(`/api/reviewResponseStream?reviewId=${reviewId}`);
+    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_DOMAIN_URL}/reviewResponseStream?reviewId=${reviewId}`); 
 
     eventSource.onmessage = function(event) {
       const data = JSON.parse(event.data);
