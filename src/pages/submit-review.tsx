@@ -16,13 +16,14 @@ const SubmitReview: React.FC = () => {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const timestamp = new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().split(' ')[0];
-    const callbackUrl = `${window.location.origin}/api/reviewCallback`;
+    const callbackUrl = `https://hotelspeaker.vercel.app/api/reviewResponse`;
+    console.log("Callback URL:", callbackUrl);
 
     const reviewData = {
       establishment_id: establishmentId,
       language: language,
       date: timestamp,
-      type: 'premium',
+      type: 'auto',
       text: review,
       callback_url: callbackUrl
     };
@@ -36,35 +37,13 @@ const SubmitReview: React.FC = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to submit review');
       setReviewId(data.id);
+      // Redirect the user to the response page
+      router.push(`/review-response?reviewId=${data.id}`);
     } catch (error) {
       console.error("Error submitting review:", error);
       setResponse("Failed to submit review.");
     }
   };
-
-  const fetchReviewResponse = async (reviewId: string) => {
-    try {
-      const res = await fetch(`/api/getReviewResponse?id=${reviewId}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const data = await res.json();
-      if (res.ok && data.responses.length > 0) {
-        setResponse(data.responses[0]?.text || 'No response available');
-      } else {
-        setTimeout(() => fetchReviewResponse(reviewId), 5000);
-      }
-    } catch (error) {
-      console.error("Error fetching review response:", error);
-      setResponse("Failed to fetch review response.");
-    }
-  };
-
-  useEffect(() => {
-    if (reviewId) {
-      fetchReviewResponse(reviewId);
-    }
-  }, [reviewId]);
 
   const handleLanguageChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setLanguage(event.target.value);

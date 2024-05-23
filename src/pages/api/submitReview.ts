@@ -1,14 +1,16 @@
-// pages/api/submitReview.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { establishment_id, language, date, type = 'premium', text, callback_url } = req.body;
+    const { establishment_id, language, date, type = 'auto', text } = req.body;
 
-    if (!establishment_id || !language || !date || !text || !callback_url) {
+    if (!establishment_id || !language || !date || !text) {
       res.status(400).json({ message: "Missing required fields." });
       return;
     }
+
+    // Include the callback URL dynamically
+    const callbackUrl = `https://hotelspeaker.vercel.app/api/reviewResponse`;
 
     const reviewData = {
       establishment_id,
@@ -16,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       date,
       type,
       text,
-      callback_url
+      callback_url: callbackUrl  // Adding callback URL here
     };
 
     try {
