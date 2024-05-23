@@ -17,36 +17,35 @@ const SubmitReview: React.FC = () => {
     event.preventDefault();
     const timestamp = new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().split(' ')[0];
 
+    const callbackUrl = `${process.env.NEXT_PUBLIC_DOMAIN_URL}/api/callback`; 
+
     const reviewData = {
-        establishment_id: establishmentId,
-        language: language,
-        date: timestamp,
-        type: 'auto',
-        text: review,
-        callback_url: ''  // Set initially empty
+      establishment_id: establishmentId,
+      language: language,
+      date: timestamp,
+      type: 'auto',
+      text: review,
+      callback_url: callbackUrl
     };
 
     try {
-        const res = await fetch('/api/submitReview', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(reviewData),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Failed to submit review');
+      const res = await fetch('/api/submitReview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reviewData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to submit review');
+      }
 
-        // Update reviewId and set the callback URL after successful submission
-        setReviewId(data.id);
-        const callbackUrl = `${process.env.NEXT_PUBLIC_DOMAIN_URL}/api/reviewResponseStream?reviewId=${data.id}`;
-        console.log("Callback URL:", callbackUrl);
-
-        router.push(`/review-response?reviewId=${data.id}`);
+      setReviewId(data.id); 
+      router.push(`/review-response?reviewId=${data.id}`);
     } catch (error) {
-        console.error("Error submitting review:", error);
-        setResponse("Failed to submit review.");
+      console.error("Error submitting review:", error);
+      setResponse("Failed to submit review.");
     }
-};
-
+  };
 
   const handleLanguageChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setLanguage(event.target.value);
