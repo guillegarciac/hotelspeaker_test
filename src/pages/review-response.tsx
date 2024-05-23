@@ -9,7 +9,9 @@ const ReviewResponse: React.FC = () => {
   const [response, setResponse] = useState<string>('Waiting for response...');
 
   useEffect(() => {
-    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_DOMAIN_URL}/api/reviewResponseStream?reviewId=${reviewId}`); 
+    const eventSourceUrl = `${process.env.NEXT_PUBLIC_DOMAIN_URL}/api/reviewResponseStream?reviewId=${reviewId}`;
+    console.log("EventSource URL:", eventSourceUrl);  // Add this line to debug the URL
+    const eventSource = new EventSource(eventSourceUrl);
 
     eventSource.onmessage = function(event) {
       const data = JSON.parse(event.data);
