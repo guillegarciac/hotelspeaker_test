@@ -9,7 +9,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         return;
     }
 
-    // Ensure the secret is defined
     const secret = process.env.CLIENT_SECRET;
     if (!secret) {
         console.error('CLIENT_SECRET is not defined.');
@@ -17,7 +16,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         return;
     }
 
-    // Read the JSON payload and prepare for signature verification
     const json_data = JSON.stringify(req.body);
     const providedSig = req.query.sig as string;
 
@@ -26,19 +24,15 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         return;
     }
 
-    // Create the HMAC and verify the signature
-    const sig = crypto.createHmac('sha256', secret)
-                      .update(json_data)
-                      .digest('hex');
+    const sig = crypto.createHmac('sha256', secret).update(json_data).digest('hex');
 
     if (providedSig !== sig) {
         res.status(403).send("Signature mismatch");
         return;
     }
 
-    // Log the verified POST data cautiously considering security implications
-    console.log("Verified POST data:", req.body); 
+    console.log("Verified POST data:", req.body);
 
-    // Respond with HTTP 200 OK if everything is correct
-    res.status(200).json({ message: "Success", data: req.body });
+    // Pass data directly back to the client
+    res.status(200).json({ success: true, data: req.body });
 }

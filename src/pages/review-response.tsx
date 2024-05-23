@@ -1,3 +1,4 @@
+// ReviewResponse.tsx
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
@@ -9,29 +10,23 @@ const ReviewResponse: React.FC = () => {
   const [response, setResponse] = useState<string>('Waiting for response...');
 
   useEffect(() => {
-    const eventSourceUrl = `${process.env.NEXT_PUBLIC_DOMAIN_URL}/api/reviewResponseStream?reviewId=${reviewId}`;
-    console.log("EventSource URL:", eventSourceUrl);
-    const eventSource = new EventSource(eventSourceUrl);
-
-    eventSource.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        if (data.review_id === reviewId && data.responses && data.responses.length > 0) {
-            setResponse(data.responses[0]?.text || 'No response available');
-            eventSource.close();
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/getReviewResponse?reviewId=${reviewId}`);
+        const data = await res.json();
+        if (res.ok && data.data.responses && data.data.responses.length > 0) {
+          setResponse(data.data.responses[0]?.text || 'No response available');
+        } else {
+          setResponse('No updates available yet.');
         }
-    };
-
-    eventSource.onerror = function(error) {
-        console.error("EventSource failed:", error);
+      } catch (error) {
+        console.error("Error fetching review response:", error);
         setResponse("Failed to connect for updates.");
-        eventSource.close();
+      }
     };
 
-    return () => {
-        eventSource.close();
-    };
-}, [reviewId]);
-
+    fetchData();
+  }, [reviewId]);
 
   return (
     <div className={styles.container}>
