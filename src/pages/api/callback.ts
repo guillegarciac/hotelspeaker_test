@@ -1,11 +1,9 @@
-// pages/api/callback.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 
 const clients: Set<NextApiResponse> = new Set();
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    // Log incoming data
     console.log('Callback received:', req.body);
 
     // Broadcast this data to all connected clients
