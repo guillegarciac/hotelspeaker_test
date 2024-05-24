@@ -9,33 +9,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { establishment_id, language, date, type = 'auto', text } = req.body;
 
-  // Validate request body
   if (!establishment_id || !language || !date || !text) {
     res.status(400).json({ message: "Missing required fields." });
     return;
   }
 
-  // Construct callback URL
-  const callbackUrl = 'https://webhook.site/5fcb7309-9355-40dc-94d1-730ae1aa90ea';
+  const callbackUrl = 'https://hotelspeaker.vercel.app/api/callback';
 
-  // Ensure all environment variables are set
   if (!process.env.NEXT_PUBLIC_BASE_URL || !process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
     console.error('Environment variables are not set');
     res.status(500).send('Internal Server Error');
     return;
   }
 
-  // Prepare review data
   const reviewData = {
     establishment_id,
     language,
     date,
     type,
     text,
-    callback_url: callbackUrl  
+    callback_url: callbackUrl
   };
 
-  // Authorization header
   const authHeader = `Basic ${Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString('base64')}`;
 
   try {
@@ -50,8 +45,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
       body: JSON.stringify(reviewData),
     });
-
-    console.log('Received response with status:', response.status);
 
     if (!response.ok) {
       const errorText = await response.text();

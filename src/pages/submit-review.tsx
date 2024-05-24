@@ -16,9 +16,10 @@ const SubmitReview: React.FC = () => {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const timestamp = new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().split(' ')[0];
-
-    const callbackUrl = `${process.env.NEXT_PUBLIC_DOMAIN_URL}/api/callback`; 
-
+  
+    // Correct declaration and assignment within the function scope
+    const callbackUrl = `https://hotelspeaker.vercel.app/api/callback`;
+  
     const reviewData = {
       establishment_id: establishmentId,
       language: language,
@@ -27,7 +28,7 @@ const SubmitReview: React.FC = () => {
       text: review,
       callback_url: callbackUrl
     };
-
+  
     try {
       const res = await fetch('/api/submitReview', {
         method: 'POST',
@@ -38,14 +39,15 @@ const SubmitReview: React.FC = () => {
       if (!res.ok) {
         throw new Error(data.message || 'Failed to submit review');
       }
-
-      setReviewId(data.id); 
+  
+      setReviewId(data.id);
       router.push(`/review-response?reviewId=${data.id}`);
     } catch (error) {
       console.error("Error submitting review:", error);
       setResponse("Failed to submit review.");
     }
   };
+  
 
   const handleLanguageChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setLanguage(event.target.value);
