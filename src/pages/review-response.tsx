@@ -1,40 +1,33 @@
-import { useEffect, useState } from 'react';
+// components/getReviewResponse.tsx
 import { useRouter } from 'next/router';
-import Head from 'next/head';
-import styles from '../styles/ReviewResponse.module.css';
+import { useEffect, useState } from 'react';
 
-const ReviewResponse = () => {
+const GetReviewResponse = () => {
   const router = useRouter();
   const { reviewId } = router.query;
-  const [response, setResponse] = useState('Waiting for response...');
+  const [response, setResponse] = useState(null);
 
   useEffect(() => {
-    const intervalId = setInterval(async () => {
-      if (!reviewId) return;
-
-      try {
-        const res = await fetch(`/api/checkCallback?reviewId=${reviewId}`);
-        const data = await res.json();
-        if (data.found) {
-          setResponse(data.data.text);  // Adjust according to actual data structure
-          clearInterval(intervalId);
-        }
-      } catch (error) {
-        console.error("Error fetching callback data:", error);
-        setResponse("Failed to connect for updates.");
-        clearInterval(intervalId);
-      }
-    }, 2000); // Poll every 2 seconds
-
-    return () => clearInterval(intervalId); // Cleanup on unmount
+    if (reviewId) {
+      fetch(`/api/getReviewResponse?reviewId=${reviewId}`)
+        .then(res => res.json())
+        .then(data => setResponse(data))
+        .catch(err => console.error('Failed to fetch review response:', err));
+    }
   }, [reviewId]);
 
   return (
     <div>
-      <h1>Review Response</h1>
-      <p>{response}</p>
+      {response ? (
+        <div>
+          <h1>Review Response</h1>
+          <p>{(response as { body: string }).body}</p>
+        </div>
+      ) : (
+        <p>Loading response...</p>
+      )}
     </div>
   );
 };
 
-export default ReviewResponse;
+export default GetReviewResponse;
