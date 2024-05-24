@@ -1,39 +1,42 @@
 // pages/api/callback.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 
-// Store all active clients in a Set for broadcasting
 const clients: Set<NextApiResponse> = new Set();
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    // Log the incoming data
+    // Log incoming data
     console.log('Callback received:', req.body);
 
-    // Convert the request body to a string that is SSE compatible
+    // Broadcast this data to all connected clients
     const dataString = `data: ${JSON.stringify(req.body)}\n\n`;
+    clients.forEach(client => {
+      client.write(dataString);
+    });
 
-    // Broadcast the data to all connected clients
-    clients.forEach(client => client.write(dataString));
-
-    // Respond to the POST request indicating success
     res.status(200).json({ message: 'Callback data broadcasted successfully' });
   } else if (req.method === 'GET' && req.headers.accept === 'text/event-stream') {
-    // Set headers for SSE
+    // Set appropriate headers for SSE
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    // Add this response object to the list of clients
+    // Register the client
     clients.add(res);
 
-    // Handle client disconnect
+    // Keep the connection alive
+    const keepAlive = setInterval(() => {
+      res.write(': keep-alive\n\n');
+    }, 20000); // Every 20 seconds
+
+    // Remove client on disconnect
     req.on('close', () => {
+      clearInterval(keepAlive);
       clients.delete(res);
       res.end();
     });
   } else {
-    // Not a POST or proper GET request, send 405 Method Not Allowed
     res.setHeader('Allow', ['POST', 'GET']);
-    res.status(405).send('Method Not Allowed');
+    res.status(405).end('Method Not Allowed');
   }
 }
