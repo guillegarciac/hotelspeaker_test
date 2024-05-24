@@ -4,11 +4,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 const clients: Set<NextApiResponse> = new Set();
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  console.log("Received request:", req.method);
-  console.log("Headers:", req.headers);
-  console.log("Body:", req.body);
-
   if (req.method === 'POST') {
+    console.log('POST request received at /api/callback');
     console.log('Callback received:', req.body);
 
     // Broadcast this data to all connected clients
@@ -19,6 +16,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
     res.status(200).json({ message: 'Callback data broadcasted successfully' });
   } else if (req.method === 'GET' && req.headers.accept === 'text/event-stream') {
+    console.log('GET request for SSE connection received at /api/callback');
+
     // Set appropriate headers for SSE
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
@@ -30,15 +29,17 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     // Keep the connection alive
     const keepAlive = setInterval(() => {
       res.write(': keep-alive\n\n');
+      console.log('Sent keep-alive');
     }, 20000); // Every 20 seconds
 
-    // Remove client on disconnect
     req.on('close', () => {
+      console.log('SSE connection closed');
       clearInterval(keepAlive);
       clients.delete(res);
       res.end();
     });
   } else {
+    console.log('Invalid request method received at /api/callback');
     res.setHeader('Allow', ['POST', 'GET']);
     res.status(405).end('Method Not Allowed');
   }
