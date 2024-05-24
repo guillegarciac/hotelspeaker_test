@@ -1,8 +1,13 @@
+// pages/api/callback.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 
 const clients: Set<NextApiResponse> = new Set();
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log("Received request:", req.method);
+  console.log("Headers:", req.headers);
+  console.log("Body:", req.body);
+
   if (req.method === 'POST') {
     console.log('Callback received:', req.body);
 
