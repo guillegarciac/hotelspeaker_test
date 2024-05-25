@@ -16,35 +16,49 @@ const ReviewResponse: React.FC = () => {
   const { reviewId } = router.query; // Get reviewId from router query
   const [response, setResponse] = useState<Response | null>(null);
   const [loading, setLoading] = useState(true); // State variable to track loading state
+  const [shouldPoll, setShouldPoll] = useState(true); // State variable to track whether polling should continue
 
   const fetchData = async () => {
     const res = await fetch('/api/callback');
     if (res.ok) {
       const data: Response = await res.json();
-      setResponse(data);
-
+      console.log('Received response:', data);
+    
       // Check if the received review_id matches the one from the query parameter
+      console.log('Review ID from query:', reviewId);
+      console.log('Review ID from response:', data.review_id);
       if (data && reviewId && data.review_id === reviewId) {
-        setLoading(false); // Stop loading if review_id matches
+        console.log('Review ID matches. Stopping polling.');
+        setShouldPoll(false); // Stop polling if review_id matches
+        setResponse(data); // Set the response in the state
+        setLoading(false); // Set loading to false once data is fetched
+      } else {
+        console.log('Review ID does not match. Continuing polling.');
       }
     }
   };
-
+  
+  // Inside the useEffect hook
   useEffect(() => {
     fetchData();
-
-    // Polling every 10 seconds
-    const pollingInterval = setInterval(fetchData, 10000);
-
-    return () => {
-      clearInterval(pollingInterval);
-    };
-  }, []); // Run once when the component mounts
+    
+    // Polling every 10 seconds if shouldPoll is true
+    if (shouldPoll) {
+      const pollingInterval = setInterval(fetchData, 10000);
+    
+      return () => {
+        clearInterval(pollingInterval);
+      };
+    }
+  }, [shouldPoll]);
 
   return (
     <div className={styles.container}>
       {loading ? ( // Show loader if loading state is true
-        <div className={styles.loader}></div>
+        <div>
+          <div>We are experiencing high volumes. Please wait without refreshing the page...</div>
+          <div className={styles.loader}></div>
+        </div>
       ) : response ? (
         <div>
           <h1>Review Responses</h1>
