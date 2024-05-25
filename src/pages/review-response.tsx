@@ -4,13 +4,11 @@ import styles from '../styles/ReviewResponse.module.css';
 
 interface Response {
   review_id: string;
-  responses: {
-    [key: string]: {
-      opening: string;
-      body: string;
-      closing: string;
-    };
-  };
+  responses: Array<{
+    opening: string;
+    body: string;
+    closing: string;
+  }>;
 }
 
 const ReviewResponse: React.FC = () => {
@@ -23,7 +21,8 @@ const ReviewResponse: React.FC = () => {
   const fetchData = async () => {
     const res = await fetch('/api/callback');
     if (res.ok) {
-      const data: Response = await res.json();
+      const text = await res.text();
+      const data: Response = JSON.parse(text.replace(/\\"/g, '"'));
       console.log('Received response:', data);
     
       // Check if the received review_id matches the one from the query parameter
@@ -65,8 +64,8 @@ const ReviewResponse: React.FC = () => {
         <div>
           <h1>Review Responses</h1>
           <p>{response.review_id}</p>
-          {Object.entries(response.responses).map(([key, res]) => (
-            <div key={key}>
+          {response.responses.map((res, index) => (
+            <div key={index}>
               <h2>{res.opening}</h2>
               <p>{res.body}</p>
               <h3>{res.closing}</h3>
