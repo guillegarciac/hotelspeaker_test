@@ -4,11 +4,13 @@ import styles from '../styles/ReviewResponse.module.css';
 
 interface Response {
   review_id: string;
-  responses: Array<{
-    opening: string;
-    body: string;
-    closing: string;
-  }>;
+  responses: {
+    [key: string]: {
+      opening: string;
+      body: string;
+      closing: string;
+    };
+  };
 }
 
 const ReviewResponse: React.FC = () => {
@@ -63,8 +65,8 @@ const ReviewResponse: React.FC = () => {
         <div>
           <h1>Review Responses</h1>
           <p>{response.review_id}</p>
-          {response.responses.map((res, index) => (
-            <div key={index}>
+          {Object.entries(response.responses).map(([key, res]) => (
+            <div key={key}>
               <h2>{res.opening}</h2>
               <p>{res.body}</p>
               <h3>{res.closing}</h3>
