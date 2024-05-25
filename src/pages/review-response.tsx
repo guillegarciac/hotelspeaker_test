@@ -1,5 +1,6 @@
 // src/pages/review-response.tsx
 import { useEffect, useState } from 'react';
+import styles from '../styles/ReviewResponse.module.css';
 
 interface Response {
   review_id: string;
@@ -12,6 +13,7 @@ interface Response {
 
 const ReviewResponse: React.FC = () => {
   const [response, setResponse] = useState<Response | null>(null);
+  const [loading, setLoading] = useState(true); // State variable to track loading state
   const [shouldPoll, setShouldPoll] = useState(true); 
 
   const fetchData = async () => {
@@ -20,6 +22,7 @@ const ReviewResponse: React.FC = () => {
       const data: Response = await res.json();
       setResponse(data);
       setShouldPoll(false);
+      setLoading(false); // Set loading to false once data is fetched
     }
   };
 
@@ -37,8 +40,10 @@ const ReviewResponse: React.FC = () => {
   }, [shouldPoll]); 
 
   return (
-    <div>
-      {response ? (
+    <div className={styles.container}>
+      {loading ? ( // Show loader if loading state is true
+        <div className={styles.loader}></div>
+      ) : response ? (
         <div>
           <h1>Review Responses</h1>
           <p>{response.review_id}</p>
