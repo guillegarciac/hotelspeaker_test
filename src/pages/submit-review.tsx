@@ -17,8 +17,18 @@ const SubmitReview: React.FC = () => {
     event.preventDefault();
     const timestamp = new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().split(' ')[0];
   
-    // Correct declaration and assignment within the function scope
     const callbackUrl = `https://hotelspeaker.vercel.app/api/callback`;
+  
+    // Clear callback endpoint before submitting new review
+    try {
+      await fetch('/api/callback', {
+        method: 'DELETE',
+      });
+      console.log('Callback endpoint cleared successfully');
+    } catch (error) {
+      console.error('Error clearing callback endpoint:', error);
+      // Handle error if needed
+    }
   
     const reviewData = {
       establishment_id: establishmentId,
@@ -47,6 +57,7 @@ const SubmitReview: React.FC = () => {
       setResponse("Failed to submit review.");
     }
   };
+  
   
 
   const handleLanguageChange = (event: ChangeEvent<HTMLSelectElement>) => {
