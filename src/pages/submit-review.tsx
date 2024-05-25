@@ -6,7 +6,7 @@ import styles from '../styles/SubmitReview.module.css';
 const SubmitReview: React.FC = () => {
   const router = useRouter();
   const { establishmentId } = router.query;
-  const defaultReview = "Both the facilities and the staff were far above our expectations. The location of this hotel is strategic, in the center of the places you can visit... and if not, transportation was just a few steps away. The only downside was that a vegan breakfast was missing.";
+  const defaultReview = "Aside from this hotel's rooms being a bit dated it has a serious bug problem in the guest rooms. Our first night we noticed a large drain gnat above the bathroom door I noted but didn't make a big deal about it. Later on we started to notice fruit flies and other peski flying insects that became a nuisance but dealt with it for the evening. The following day my daughter found an insect crawling in her clothes that she had stored in the hotels dresser. We filed a complaint with the manager on duty, (Isma) and had a front desk clerk move us to a different room that unfortunately had the same issues. Isma promised she would follow up with me on her finding and a resolution to my complaint but never did. Issues we encountered included bugs in both the bathroom and guest room furniture, a dirty towel and subpar room cleaning services. Staff at the hotel was friendly but we were not happy with the services provided. I found it to be unprofessional the Hilton London Metropole didn't offer a resolution for our ongoing issues. They did however write an apology note and give me a bowl of fruit and juice!?";
 
   const [review, setReview] = useState<string>(defaultReview);
   const [language, setLanguage] = useState<string>('en');
