@@ -21,10 +21,15 @@ const ReviewResponse: React.FC = () => {
   const fetchData = async () => {
     const res = await fetch('/api/callback');
     if (res.ok) {
-      const text = await res.text();
-      const data: Response = JSON.parse(text.replace(/\\"/g, '"'));
+      const json = await res.json();
+      const callbackData = JSON.parse(Object.keys(json)[0]);
+      const data: Response = {
+        review_id: callbackData.review_id,
+        responses: callbackData.responses,
+      };
+  
       console.log('Received response:', data);
-    
+  
       // Check if the received review_id matches the one from the query parameter
       console.log('Review ID from query:', reviewId);
       console.log('Review ID from response:', data.review_id);
@@ -38,6 +43,7 @@ const ReviewResponse: React.FC = () => {
       }
     }
   };
+  
   
   // Inside the useEffect hook
   useEffect(() => {
