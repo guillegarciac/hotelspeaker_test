@@ -1,4 +1,3 @@
-// src/pages/review-response.tsx
 import { useEffect, useState } from 'react';
 import styles from '../styles/ReviewResponse.module.css';
 

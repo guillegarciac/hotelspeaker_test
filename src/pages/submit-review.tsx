@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
+import { useState, FormEvent, ChangeEvent } from 'react';
 import Head from 'next/head';
 import styles from '../styles/SubmitReview.module.css';
 
@@ -19,27 +19,22 @@ const SubmitReview: React.FC = () => {
   
     const callbackUrl = `https://hotelspeaker.vercel.app/api/callback`;
   
-    // Clear callback endpoint before submitting new review
     try {
+      // Clear callback endpoint before submitting new review
       await fetch('/api/callback', {
         method: 'DELETE',
       });
       console.log('Callback endpoint cleared successfully');
-    } catch (error) {
-      console.error('Error clearing callback endpoint:', error);
-      // Handle error if needed
-    }
   
-    const reviewData = {
-      establishment_id: establishmentId,
-      language: language,
-      date: timestamp,
-      type: 'auto',
-      text: review,
-      callback_url: callbackUrl
-    };
+      const reviewData = {
+        establishment_id: establishmentId,
+        language: language,
+        date: timestamp,
+        type: 'auto',
+        text: review,
+        callback_url: callbackUrl
+      };
   
-    try {
       const res = await fetch('/api/submitReview', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -58,8 +53,6 @@ const SubmitReview: React.FC = () => {
     }
   };
   
-  
-
   const handleLanguageChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setLanguage(event.target.value);
   };
