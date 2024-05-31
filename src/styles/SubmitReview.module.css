@@ -1,5 +1,5 @@
 .container {
-  padding: 2rem;
+  padding: 1rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   max-width: 800px;
   margin: auto;
@@ -10,10 +10,10 @@
 }
 
 .heading {
-  font-size: 2rem;
+  font-size: 1.5rem;  /* Smaller size for mobile */
   color: #343a40;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem; /* Less margin for compact layout */
 }
 
 .form {
@@ -31,7 +31,7 @@
 }
 
 .label {
-  font-size: 1.2rem;
+  font-size: 1rem; /* Smaller label size for mobile */
   color: #495057;
 }
 
@@ -41,7 +41,7 @@
   color: white;
   border: none;
   border-radius: 5px;
-  font-size: 1.2rem;
+  font-size: 1rem; /* Smaller font size for buttons */
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -51,7 +51,7 @@
 }
 
 .response {
-  font-size: 1rem;
+  font-size: 0.9rem; /* Smaller font size for responses */
   color: #212529;
   border-top: 1px solid #dee2e6;
   padding-top: 1rem;
@@ -62,39 +62,53 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 2rem;
+  margin-top: 1rem; /* Adjusted margin */
 }
 
 .loaderText {
-  font-size: 1.2rem;
-  color: #007bff; 
-  margin-top: 1rem;
+  font-size: 1rem; /* Smaller font size for loader text */
+  color: #007bff;
+  margin-top: 0.5rem;
   display: flex;
-  align-items: center; 
-  justify-content: center; 
-  text-align: center; 
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .dots {
   display: inline-block;
-  margin-left: 5px; 
+  margin-left: 5px;
 }
 
 @media (min-width: 600px) {
+  .container {
+    padding: 2rem; /* More padding on larger screens */
+  }
+
+  .heading {
+    font-size: 2rem; /* Larger font size for headings */
+    margin-bottom: 2rem; /* More bottom margin */
+  }
+
   .form {
     gap: 2rem;
   }
   
   .textarea {
-    height: 250px;
+    height: 250px; /* Larger text area on bigger screens */
   }
 
   .button {
     padding: 0.85rem 3rem;
+    font-size: 1.2rem; /* Larger font size for buttons */
   }
 
   .response {
-    font-size: 1.1rem;
+    font-size: 1.1rem; /* Larger font size for response text */
     margin-top: 2rem;
+  }
+
+  .loaderText {
+    font-size: 1.2rem; /* Larger font size for loader text */
   }
 }
