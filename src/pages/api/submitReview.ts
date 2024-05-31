@@ -7,14 +7,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
-  const { establishment_id, language, date, type = 'auto', text } = req.body;
+  const { establishment_id, language, date, type = 'instant', text } = req.body;
 
   if (!establishment_id || !language || !date || !text) {
     res.status(400).json({ message: "Missing required fields." });
     return;
   }
-
-  const callbackUrl = 'https://hotelspeaker.vercel.app/api/callback';
 
   if (!process.env.NEXT_PUBLIC_BASE_URL || !process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
     console.error('Environment variables are not set');
@@ -27,8 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     language,
     date,
     type,
-    text,
-    callback_url: callbackUrl
+    text
   };
 
   const authHeader = `Basic ${Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString('base64')}`;
