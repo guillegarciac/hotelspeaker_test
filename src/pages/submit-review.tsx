@@ -30,7 +30,7 @@ const SubmitReview: React.FC = () => {
         establishment_id: establishmentId,
         language: language,
         date: timestamp,
-        type: 'auto',
+        type: 'instant',
         text: review,
         callback_url: callbackUrl
       };
